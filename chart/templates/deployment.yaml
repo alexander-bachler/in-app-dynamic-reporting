@@ -28,15 +28,15 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy | default "IfNotPresent" }}"
           image: "{{ .Values.appImage | default "linemetrics" }}:{{ .Values.appTag | default "latest" }}"
           ports:
-          - containerPort: 3000
+          - containerPort: 80
           readinessProbe:
             tcpSocket:
-              port: 3000
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             tcpSocket:
-              port: 3000
+              port: 80
             initialDelaySeconds: 15
             periodSeconds: 20
       affinity:
