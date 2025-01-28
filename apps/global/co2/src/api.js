@@ -1,12 +1,16 @@
 // Konfiguration aus der .env-Datei
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
-const baseUrl = process.env.REACT_APP_BASE_URL;
+let baseUrl = process.env.REACT_APP_BASE_URL;
 
 let accessToken = ''; // Variable für den Access Token
 let clientCredentials = { id: '', secret: '' }; // Variable für Client Credentials
 
 async function getAccessToken() {
+    if (baseUrl === undefined) {
+        baseUrl = 'https://rest-api.linemetrics.com'; // Fallback-Wert für die Basis-URL
+    }
+
     if (accessToken) {
         return accessToken; // Rückgabe des vorhandenen Tokens
     }
