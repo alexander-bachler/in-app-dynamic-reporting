@@ -1,0 +1,18 @@
+{
+  "global": {
+    "reports": [
+      {
+        "name": "CO2 Reporting",
+        "path": "global/co2"
+      }
+    ]
+  },
+  "example": {
+    "reports": [
+      {
+        "name": "Example Reporting",
+        "path": "example"
+      }
+    ]
+  }
+}
