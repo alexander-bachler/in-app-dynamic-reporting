@@ -68,19 +68,20 @@ The reports will be available at `http://localhost:1000/{{folder}}/{{report-name
 
 To add a new report for a specific account you need to follow these steps:
 
-1. Create a new folder in the `apps/accounts` directory with the accountId
-2. Create a new folder in the created folder with the name of the report
-3. Copy the `example-reporting` folder and rename it to the name of the report
-4. Update the `package.json` file
+1. Create new feature branch from `main` branch after you have cloned the repository and pulled all changes with `git pull`
+2. Create a new folder in the `apps/accounts` directory with the accountId
+3. Create a new folder in the created folder with the name of the report
+4. Copy the `example-reporting` folder and rename it to the name of the report
+5. Update the `package.json` file
    - Update the `name` field with the name of the report
    - Update the `scripts:build` field to the right path to the `./build/` folder in the root directory
-5. Copy the `.env.example` file and renaming it to `.env` and update the values to access the right account you are developing for
-6. Start the subproject
+6. Copy the `.env.example` file and renaming it to `.env` and update the values to access the right account you are developing for
+7. Start the subproject
     ```bash
     npm run start --workspace={{report-name from package.json}}
     ```
    
-7. Finish testing and development by starting the project with Docker and check if your changes are working
+8. Finish testing and development by starting the project with Docker and check if your changes are working
     ```bash
     docker-compose up --build
     ```
