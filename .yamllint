@@ -1,0 +1,12 @@
+---
+extends: default
+
+rules:
+  line-length:
+    level: warning
+    max: 150
+
+ignore: |
+  docker-compose.yml
+  chart/templates/
+  chart/access.yaml
