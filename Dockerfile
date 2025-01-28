@@ -13,6 +13,15 @@ COPY . .
 # Install dependencies and build the React apps
 RUN npm i && npm run build
 
+# Copy the bash script to the container
+COPY copyReportMenus.sh /app/
+
+# Make the script executable
+RUN chmod +x /app/copyReportMenus.sh
+
+# Run the script to copy report_menu.json files
+RUN /bin/sh /app/copyReportMenus.sh
+
 # Stage 2: Deployment
 FROM nginx:1.27.3-alpine
 ARG SERVICE_NAME SERVICE_VERSION
