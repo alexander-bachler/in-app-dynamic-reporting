@@ -27,6 +27,9 @@ spec:
         - name: "{{ .Values.appName | default "linemetrics" }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy | default "IfNotPresent" }}"
           image: "{{ .Values.appImage | default "linemetrics" }}:{{ .Values.appTag | default "latest" }}"
+          env:
+          - name: "REACT_APP_BASE_URL"
+            value: "{{ .Values.app_restapi_url }}"
           ports:
           - containerPort: 80
           readinessProbe:
