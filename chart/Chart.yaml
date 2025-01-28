@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+name: dynamic-reporting
+description: LineMetrics In-App-Dynamic-Reporting Helm chart for Kubernetes
+icon: https://avatars.githubusercontent.com/u/4923958?s=200&v=4
+type: application
+version: 0.0.1
+keywords:
+  - webapp
+  - dynamic-reporting
+  - in-app
+home: https://gitlab.linemetrics.com/LineMetrics/Frontend-Services/in-app-dynamic-reporting
+sources:
+  - https://gitlab.linemetrics.com/LineMetrics/Frontend-Services/in-app-dynamic-reporting

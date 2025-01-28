@@ -1,0 +1,8 @@
+---
+appName: dynamic-reporting
+appImage: "registry.linemetrics.dev/linemetrics/frontend-services/in-app-dynamic-reporting"
+appTag: edge
+imagePullPolicy: "Always"
+appReplicas: 3
+minReadySeconds: 5
+appUpdateStrategy: RollingUpdate
