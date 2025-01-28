@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
+import {HashRouter} from 'react-router-dom'; // Importiere HashRouter
 import DevicesPage from './pages/DevicesPage';
 import ObjectsPage from './pages/ObjectsPage';
-import { getAllDevices, getObjectTree, setAccessToken } from './api'; // Importiere die Funktionen
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {getAllDevices, getObjectTree, setAccessToken} from './api'; // Importiere die Funktionen
+import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import 'react-tabs/style/react-tabs.css'; // Importiere die Styles für die Tabs
-import { Spinner, Alert } from 'react-bootstrap'; // Importiere Spinner und Alert von Bootstrap
+import {Spinner, Alert} from 'react-bootstrap'; // Importiere Spinner und Alert von Bootstrap
 
 function App() {
     const [activeTab, setActiveTab] = useState('Devices');
@@ -15,7 +16,7 @@ function App() {
     const [selectedInputId, setSelectedInputId] = useState('');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
-    const [chartData, setChartData] = useState({ labels: [], datasets: [] }); // State für die Chart-Daten
+    const [chartData, setChartData] = useState({labels: [], datasets: []}); // State für die Chart-Daten
     const [selectedObjectId, setSelectedObjectId] = useState(''); // State für das ausgewählte Objekt
     const [measuringPoints, setMeasuringPoints] = useState([]); // State für die Messpunkte
     const [selectedMeasuringPointId, setSelectedMeasuringPointId] = useState(''); // State für den ausgewählten Messpunkt
@@ -24,7 +25,7 @@ function App() {
 
     useEffect(() => {
         // Reset chart data when switching tabs
-        setChartData({ labels: [], datasets: [] });
+        setChartData({labels: [], datasets: []});
 
         // Token aus URL-Parametern extrahieren
         const params = new URLSearchParams(window.location.search);
@@ -101,65 +102,76 @@ function App() {
     };
 
     return (
-        <div className="container mt-4" style={{ position: 'relative' }}>
-            {loading && (
-                <div className="spinner-overlay d-flex justify-content-center align-items-center" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1000, backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-                    <Spinner animation="border" />
-                </div>
-            )}
-            {error && (
-                <Alert variant="danger" onClose={() => setError(null)} dismissible>
-                    {error}
-                </Alert>
-            )}
-            <Tabs selectedTabClassName="active" onSelect={tabIndex => setActiveTab(tabIndex === 0 ? 'Devices' : 'Objects')}>
-                <TabList>
-                    <Tab>Devices</Tab>
-                    <Tab>Objects</Tab>
-                </TabList>
+        <HashRouter>
+            <div className="container mt-4" style={{position: 'relative'}}>
+                {loading && (
+                    <div className="spinner-overlay d-flex justify-content-center align-items-center" style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 1000,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                    }}>
+                        <Spinner animation="border"/>
+                    </div>
+                )}
+                {error && (
+                    <Alert variant="danger" onClose={() => setError(null)} dismissible>
+                        {error}
+                    </Alert>
+                )}
+                <Tabs selectedTabClassName="active"
+                      onSelect={tabIndex => setActiveTab(tabIndex === 0 ? 'Devices' : 'Objects')}>
+                    <TabList>
+                        <Tab>Devices</Tab>
+                        <Tab>Objects</Tab>
+                    </TabList>
 
-                <TabPanel>
-                    <DevicesPage 
-                        selectedDeviceId={selectedDeviceId}
-                        setSelectedDeviceId={setSelectedDeviceId}
-                        selectedInputId={selectedInputId}
-                        setSelectedInputId={setSelectedInputId}
-                        dateFrom={dateFrom}
-                        dateTo={dateTo}
-                        setDateFrom={setDateFrom}
-                        setDateTo={setDateTo}
-                        chartData={chartData}
-                        setChartData={setChartData}
-                        devices={devices}
-                        inputs={inputs}
-                        setInputs={setInputs}
-                        handleDateFromChange={handleDateFromChange}
-                        handleDateToChange={handleDateToChange}
-                    />
-                </TabPanel>
-                <TabPanel>
-                    <ObjectsPage 
-                        selectedObjectId={selectedObjectId}
-                        setSelectedObjectId={setSelectedObjectId}
-                        measuringPoints={measuringPoints}
-                        setMeasuringPoints={setMeasuringPoints}
-                        selectedMeasuringPointId={selectedMeasuringPointId}
-                        setSelectedMeasuringPointId={setSelectedMeasuringPointId}
-                        dateFrom={dateFrom}
-                        dateTo={dateTo}
-                        setDateFrom={setDateFrom}
-                        setDateTo={setDateTo}
-                        chartData={chartData}
-                        setChartData={setChartData}
-                        objectTree={objectTree}
-                        setObjectTree={setObjectTree}
-                        renderObjectOptions={renderObjectOptions}
-                        handleDateFromChange={handleDateFromChange}
-                        handleDateToChange={handleDateToChange}
-                    />
-                </TabPanel>
-            </Tabs>
-        </div>
+                    <TabPanel>
+                        <DevicesPage
+                            selectedDeviceId={selectedDeviceId}
+                            setSelectedDeviceId={setSelectedDeviceId}
+                            selectedInputId={selectedInputId}
+                            setSelectedInputId={setSelectedInputId}
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                            setDateFrom={setDateFrom}
+                            setDateTo={setDateTo}
+                            chartData={chartData}
+                            setChartData={setChartData}
+                            devices={devices}
+                            inputs={inputs}
+                            setInputs={setInputs}
+                            handleDateFromChange={handleDateFromChange}
+                            handleDateToChange={handleDateToChange}
+                        />
+                    </TabPanel>
+                    <TabPanel>
+                        <ObjectsPage
+                            selectedObjectId={selectedObjectId}
+                            setSelectedObjectId={setSelectedObjectId}
+                            measuringPoints={measuringPoints}
+                            setMeasuringPoints={setMeasuringPoints}
+                            selectedMeasuringPointId={selectedMeasuringPointId}
+                            setSelectedMeasuringPointId={setSelectedMeasuringPointId}
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                            setDateFrom={setDateFrom}
+                            setDateTo={setDateTo}
+                            chartData={chartData}
+                            setChartData={setChartData}
+                            objectTree={objectTree}
+                            setObjectTree={setObjectTree}
+                            renderObjectOptions={renderObjectOptions}
+                            handleDateFromChange={handleDateFromChange}
+                            handleDateToChange={handleDateToChange}
+                        />
+                    </TabPanel>
+                </Tabs>
+            </div>
+        </HashRouter>
     );
 }
 

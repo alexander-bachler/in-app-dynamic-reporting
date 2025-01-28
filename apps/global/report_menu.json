@@ -1,0 +1,12 @@
+{
+  "reports": [
+    {
+      "name": "Example Co2 Reporting",
+      "path": "co2"
+    },
+    {
+      "name": "Example Energy Reporting",
+      "path": "energy"
+    }
+  ]
+}

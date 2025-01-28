@@ -1,0 +1,8 @@
+{
+  "reports": [
+    {
+      "name": "Example Reporting",
+      "path": "example"
+    }
+  ]
+}
