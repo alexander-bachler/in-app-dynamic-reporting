@@ -10,9 +10,13 @@ WORKDIR /app
 # Copy the project files
 COPY . .
 
+# Use the build argument for React
+ARG REACT_APP_BASE_URL
+ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
+
 # Install dependencies and build the React apps
 RUN npm i && \
- npm run build && \
+ REACT_APP_BASE_URL=$REACT_APP_BASE_URL npm run build && \
  chmod +x /app/copyReportMenus.sh && \
  # Run the script to copy report_menu.json files
  /bin/sh /app/copyReportMenus.sh
