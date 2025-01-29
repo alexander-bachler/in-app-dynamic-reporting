@@ -5,7 +5,8 @@
   "workspaces": [
     "apps/examples/*",
     "apps/global/*",
-    "apps/accounts/*/*"
+    "apps/accounts/*/*",
+    "apps/shared/*"
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.14.5"
