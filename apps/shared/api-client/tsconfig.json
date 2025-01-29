@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "declaration": true,            // creates `.d.ts`-files for types
+    "outDir": "dist",               // compiled files land in `dist`-folder
+    "strict": true                  // activate strict TypeScript-Rules
+  },
+  "include": ["src/**/*.ts"],        // Only files in the `src`-folder are compiled
+  "exclude": ["node_modules"]
+}
