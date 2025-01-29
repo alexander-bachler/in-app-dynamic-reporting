@@ -1,8 +1,13 @@
 // Konfiguration aus der .env-Datei
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
-    console.log('Remote API URL:', baseUrl); // Debugging: Zeigen Sie die Basis-URL an
+let accessToken = ''; // Variable für den Access Token
+let clientCredentials = { id: '', secret: '' }; // Variable für Client Credentials
+
+async function getAccessToken() {
+
     if (accessToken) {
         return accessToken; // Rückgabe des vorhandenen Tokens
     }

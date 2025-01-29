@@ -7,9 +7,6 @@ let accessToken = ''; // Variable für den Access Token
 let clientCredentials = { id: '', secret: '' }; // Variable für Client Credentials
 
 async function getAccessToken() {
-    if (baseUrl === undefined) {
-        baseUrl = 'https://rest-api.linemetrics.com'; // Fallback-Wert für die Basis-URL
-    }
 
     if (accessToken) {
         return accessToken; // Rückgabe des vorhandenen Tokens
