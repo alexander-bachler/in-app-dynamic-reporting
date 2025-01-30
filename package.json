@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
+    "apps/shared/*",
     "apps/examples/*",
     "apps/global/*",
-    "apps/accounts/*/*",
-    "apps/shared/*"
+    "apps/accounts/*/*"
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.14.5"

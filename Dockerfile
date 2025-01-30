@@ -1,5 +1,5 @@
 ARG SERVICE_NAME="dynamic-reporting"
-ARG SERVICE_VERSION="0.0.1"
+ARG SERVICE_VERSION="0.0.2"
 
 # Stage 1: Build
 FROM node:23.6.1-alpine3.20 AS build
@@ -27,6 +27,10 @@ ARG SERVICE_NAME SERVICE_VERSION
 
 # Copy the build files from the build stage
 COPY --from=build /app/build /usr/share/nginx/html
+
+COPY nginx/default_local.conf /etc/nginx/conf.d/default.conf
+
+RUN chown root:root /etc/nginx/conf.d/default.conf
 
 ENV SERVICE_NAME=$SERVICE_NAME
 ENV SERVICE_VERSION=$SERVICE_VERSION
