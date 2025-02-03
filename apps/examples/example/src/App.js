@@ -22,7 +22,7 @@ function App() {
     const [selectedMeasuringPointId, setSelectedMeasuringPointId] = useState(''); // State für den ausgewählten Messpunkt
     const [inputs, setInputs] = useState([]); // State für die Eingaben
     const [error, setError] = useState(null); // State für Fehler
-    const apiClient = new ApiClient();
+    const [apiClient] = useState(new ApiClient());
 
     useEffect(() => {
         // Reset chart data when switching tabs

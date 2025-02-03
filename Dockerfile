@@ -1,5 +1,5 @@
 ARG SERVICE_NAME="dynamic-reporting"
-ARG SERVICE_VERSION="0.0.2"
+ARG SERVICE_VERSION="0.0.3"
 
 # Stage 1: Build
 FROM node:23.6.1-alpine3.20 AS build
