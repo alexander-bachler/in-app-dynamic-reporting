@@ -46,11 +46,11 @@ spec:
           - name: env
             mountPath: /usr/share/nginx/html/.env
             subPath: .env
-        volumes:
-        - name: env
-          configMap:
-            name: env-config
-            defaultMode: 0555
+      volumes:
+      - name: env
+        configMap:
+          name: env-config
+          defaultMode: 0555
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
