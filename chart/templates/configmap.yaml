@@ -4,4 +4,6 @@ kind: ConfigMap
 metadata:
   name: "env-config"
   namespace: "{{ .Values.appNamespace | default "linemetrics" }}"
-data:  {{- tpl ((.Files.Glob "config/*").AsConfig) . }}
+data:
+  .env: |
+    REACT_APP_BASE_URL={{ .Values.app_restapi_url }}

@@ -44,7 +44,8 @@ spec:
             periodSeconds: 20
           volumeMounts:
           - name: env
-            mountPath: /usr/share/nginx/html/
+            mountPath: /usr/share/nginx/html/.env
+            subPath: .env
         volumes:
         - name: env
           configMap:
