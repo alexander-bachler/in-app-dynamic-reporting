@@ -1,5 +1,7 @@
 ARG SERVICE_NAME="dynamic-reporting"
-ARG SERVICE_VERSION="0.0.4"
+ARG SERVICE_VERSION="0.0.5"
+ARG BUILD_DATE
+ARG BUILD_REF
 
 # Stage 1: Build
 FROM node:23.6.1-alpine3.20 AS build
@@ -19,7 +21,10 @@ RUN npm i && \
 
 # Stage 2: Deployment
 FROM nginx:1.27.3-alpine
-ARG SERVICE_NAME SERVICE_VERSION
+ARG SERVICE_NAME
+ARG SERVICE_VERSION
+ARG BUILD_DATE
+ARG BUILD_REF
 
 WORKDIR /usr/share/nginx/html
 
@@ -30,8 +35,6 @@ COPY nginx/default_local.conf /etc/nginx/conf.d/default.conf
 
 RUN chown root:root /etc/nginx/conf.d/default.conf
 
-ENV SERVICE_NAME=$SERVICE_NAME
-ENV SERVICE_VERSION=$SERVICE_VERSION
 LABEL \
     maintainer="LineMetrics <engineering@linemetrics.com>" \
     name="${SERVICE_NAME}" \
@@ -39,7 +42,9 @@ LABEL \
     org.label-schema.description="${SERVICE_NAME}" \
     org.label-schema.name="${SERVICE_NAME}" \
     org.label-schema.schema-version="1.0" \
-    org.label-schema.url="https://www.linemetrics.rocks/" \
-    org.label-schema.usage="https://www.linemetrics.rocks/" \
+    org.label-schema.build-date="${BUILD_DATE}" \
+    org.label-schema.url="https://www.linemetrics.com/" \
+    org.label-schema.usage="https://www.linemetrics.com/" \
+    org.label-schema.vcs-ref="${BUILD_REF}" \
     org.label-schema.vcs-url="https://gitlab.linemetrics.com/LineMetrics/Frontend-Services/in-app-dynamic-reporting" \
     org.label-schema.vendor="LineMetrics"
