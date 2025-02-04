@@ -4,7 +4,7 @@ name: dynamic-reporting
 description: LineMetrics In-App-Dynamic-Reporting Helm chart for Kubernetes
 icon: https://avatars.githubusercontent.com/u/4923958?s=200&v=4
 type: application
-version: 0.0.7
+version: 0.0.8
 keywords:
   - webapp
   - dynamic-reporting

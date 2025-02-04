@@ -27,9 +27,9 @@ spec:
         - name: "{{ .Values.appName | default "linemetrics" }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy | default "IfNotPresent" }}"
           image: "{{ .Values.appImage | default "linemetrics" }}:{{ .Values.appTag | default "latest" }}"
-          env:
-          - name: "REACT_APP_BASE_URL"
-            value: "{{ .Values.app_restapi_url }}"
+          #env: # not working for react apps
+          #- name: "REACT_APP_BASE_URL"
+          #  value: "{{ .Values.app_restapi_url }}"
           ports:
           - containerPort: 80
           readinessProbe:
@@ -42,6 +42,14 @@ spec:
               port: 80
             initialDelaySeconds: 15
             periodSeconds: 20
+          volumeMounts:
+          - name: env
+            mountPath: /usr/share/nginx/html/
+        volumes:
+        - name: env
+          configMap:
+            name: env-config
+            defaultMode: 0555
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
