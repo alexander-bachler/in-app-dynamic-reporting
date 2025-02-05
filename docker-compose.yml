@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        REACT_APP_BASE_URL: "http://192.168.112.28"
       #args:
       #  REACT_APP_BASE_URL: "https://restapi.linemetrics.com"
     ports:

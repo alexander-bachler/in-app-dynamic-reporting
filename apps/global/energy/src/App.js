@@ -2,10 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {HashRouter} from 'react-router-dom'; // Importiere HashRouter
 import DevicesPage from './pages/DevicesPage';
 import ObjectsPage from './pages/ObjectsPage';
-import {getAllDevices, getObjectTree, setAccessToken} from './api'; // Importiere die Funktionen
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import 'react-tabs/style/react-tabs.css'; // Importiere die Styles für die Tabs
 import {Spinner, Alert} from 'react-bootstrap'; // Importiere Spinner und Alert von Bootstrap
+import ApiClient from '@project/api-client';
 
 function App() {
     const [activeTab, setActiveTab] = useState('Devices');
@@ -22,6 +22,7 @@ function App() {
     const [selectedMeasuringPointId, setSelectedMeasuringPointId] = useState(''); // State für den ausgewählten Messpunkt
     const [inputs, setInputs] = useState([]); // State für die Eingaben
     const [error, setError] = useState(null); // State für Fehler
+    const [apiClient] = useState(new ApiClient());
 
     useEffect(() => {
         // Reset chart data when switching tabs
@@ -32,7 +33,7 @@ function App() {
         const token = params.get('token');
 
         if (token) {
-            setAccessToken(token); // Setze das Access-Token
+            apiClient.setAccessToken(token); // Setze das Access-Token
             fetchDevicesWithToken(); // Rufe Geräte mit Token ab
         } else {
             fetchDevices(); // Rufe Geräte ohne Token ab
@@ -42,7 +43,7 @@ function App() {
     const fetchDevicesWithToken = async () => {
         setLoading(true);
         try {
-            const response = await getAllDevices();
+            const response = await apiClient.getAllDevices();
             console.log('Devices: ', response);
             setDevices(response); // Setze die Geräte in den State
         } catch (error) {
@@ -55,7 +56,7 @@ function App() {
 
     const fetchDevices = async () => {
         if (activeTab === 'Devices') {
-            const response = await getAllDevices();
+            const response = await apiClient.getAllDevices();
             console.log('Devices: ', response);
             setDevices(response); // Setze die Geräte in den State
         }
@@ -70,7 +71,7 @@ function App() {
     const fetchObjectTree = async () => {
         setLoading(true); // Setze den Ladezustand auf true
         try {
-            const tree = await getObjectTree(); // Rufe den Objektbaum ab
+            const tree = await apiClient.getObjectTree(); // Rufe den Objektbaum ab
             console.log('Objektbaum:', tree); // Debugging: Zeige den abgerufenen Baum an
             setObjectTree(tree); // Setze den Objektbaum in den State
         } catch (error) {
@@ -131,6 +132,7 @@ function App() {
 
                     <TabPanel>
                         <DevicesPage
+                            apiClient={apiClient}
                             selectedDeviceId={selectedDeviceId}
                             setSelectedDeviceId={setSelectedDeviceId}
                             selectedInputId={selectedInputId}
@@ -150,6 +152,7 @@ function App() {
                     </TabPanel>
                     <TabPanel>
                         <ObjectsPage
+                            apiClient={apiClient}
                             selectedObjectId={selectedObjectId}
                             setSelectedObjectId={setSelectedObjectId}
                             measuringPoints={measuringPoints}

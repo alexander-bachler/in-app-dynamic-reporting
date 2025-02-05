@@ -5,13 +5,19 @@ import {ClientCredentials, DeviceInputParams, Node} from './types';
 const clientId: string | undefined = process.env.REACT_APP_CLIENT_ID;
 const clientSecret: string | undefined = process.env.REACT_APP_CLIENT_SECRET;
 
+declare global {
+    interface Window {
+        env:any;
+    }
+}
+
 class ApiClient {
     private readonly baseUrl: string | undefined;
     private accessToken: string;
     private clientCredentials: ClientCredentials;
 
     constructor() {
-        this.baseUrl = process.env.REACT_APP_BASE_URL;
+        this.baseUrl = window.env.REACT_APP_BASE_URL;
         this.accessToken = ''; // Variable für den Access Token
         this.clientCredentials = {id: '', secret: ''}; // Variable für Client Credentials
     }

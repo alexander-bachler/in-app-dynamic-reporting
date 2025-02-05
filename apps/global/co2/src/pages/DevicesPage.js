@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { getInputsForDevice, getDataForInput } from '../api'; 
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { Spinner } from 'react-bootstrap';
 
 Chart.register(...registerables);
 
-const DevicesPage = ({ 
-    selectedDeviceId, 
-    setSelectedDeviceId, 
-    selectedInputId, 
-    setSelectedInputId, 
-    dateFrom, 
-    dateTo, 
-    setDateFrom, 
-    setDateTo, 
-    chartData = { labels: [], datasets: [] }, 
-    setChartData, 
-    devices, 
-    inputs, 
-    setInputs, 
-    handleDateFromChange, 
-    handleDateToChange 
-}) => {
+const DevicesPage = ({
+                         apiClient,
+                         selectedDeviceId,
+                         setSelectedDeviceId,
+                         selectedInputId,
+                         setSelectedInputId,
+                         dateFrom,
+                         dateTo,
+                         setDateFrom,
+                         setDateTo,
+                         chartData = { labels: [], datasets: [] },
+                         setChartData,
+                         devices,
+                         inputs,
+                         setInputs,
+                         handleDateFromChange,
+                         handleDateToChange
+                     }) => {
     const [loading, setLoading] = useState(false);
-    const [tableData, setTableData] = useState([]); 
+    const [tableData, setTableData] = useState([]);
     const [granularity, setGranularity] = useState('PT1H'); // Default Granularität
 
     const handleDeviceChange = async (event) => {
@@ -32,42 +32,46 @@ const DevicesPage = ({
         setSelectedDeviceId(deviceId);
 
         if (deviceId) {
-            const response = await getInputsForDevice({ deviceId });
-            setInputs(response.included); 
+            const response = await apiClient.getInputsForDevice({ deviceId });
+            setInputs(response.included);
         } else {
-            setInputs([]); 
+            setInputs([]);
         }
     };
 
     const fetchDataForInput = async () => {
         if (selectedDeviceId && selectedInputId && dateFrom && dateTo) {
             setLoading(true);
-            const timeFrom = new Date(dateFrom).getTime(); 
-            const timeTo = new Date(dateTo).getTime(); 
+            const timeFrom = new Date(dateFrom).getTime();
+            const timeTo = new Date(dateTo).getTime();
 
-            const response = await getDataForInput(timeFrom, timeTo, selectedInputId, granularity);
+            const response = await apiClient.getDataForInput(timeFrom, timeTo, selectedInputId, granularity);
             console.log('Daten für den Eingang:', response);
 
             if (!response || response.length === 0) {
                 setChartData({ labels: [], datasets: [] });
-                setTableData([]); 
+                setTableData([]);
             } else {
                 const newChartData = {
-                    labels: response.map(item => new Date(item.ts).toLocaleString()), 
+                    labels: response.map(item => new Date(item.ts).toLocaleString()),
                     datasets: [
                         {
                             label: 'Wert',
-                            data: response.map(item => item.val), 
+                            data: response.map(item => item.val),
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         },
                     ],
                 };
                 setChartData(newChartData);
-                setTableData(response); 
+                setTableData(response);
             }
             setLoading(false);
         }
+    };
+
+    const handleFlushCache = () => {
+        apiClient.flushCache();
     };
 
     return (
@@ -77,7 +81,7 @@ const DevicesPage = ({
                     <option value="">Wähle ein Gerät</option>
                     {devices.map(device => (
                         <option key={device.id} value={device.id}>
-                            {device.title} 
+                            {device.title}
                         </option>
                     ))}
                 </select>
@@ -99,6 +103,7 @@ const DevicesPage = ({
                 <span className="mx-2">-</span>
                 <input type="date" className="form-control me-2" value={dateTo} onChange={handleDateToChange} />
                 <button className="btn btn-primary" onClick={fetchDataForInput}>Load</button>
+                <button className="btn btn-danger ms-2" onClick={handleFlushCache}>Flush Cache</button>
             </div>
 
             <div className="d-flex flex-row justify-content-center align-items-start mt-3" style={{ width: '100%' }}>
@@ -110,22 +115,22 @@ const DevicesPage = ({
                     ) : (
                         <table className="table">
                             <thead>
-                                <tr>
-                                    <th>Zeitstempel</th>
-                                    <th>Wert</th>
-                                    <th>Min</th>
-                                    <th>Max</th>
-                                </tr>
+                            <tr>
+                                <th>Zeitstempel</th>
+                                <th>Wert</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {tableData.slice(0, 10).map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{new Date(item.ts).toLocaleString()}</td>
-                                        <td>{item.val !== null ? item.val : 'N/A'}</td>
-                                        <td>{item.min !== null ? item.min : 'N/A'}</td>
-                                        <td>{item.max !== null ? item.max : 'N/A'}</td>
-                                    </tr>
-                                ))}
+                            {tableData.slice(0, 10).map((item, index) => (
+                                <tr key={index}>
+                                    <td>{new Date(item.ts).toLocaleString()}</td>
+                                    <td>{item.val !== null ? item.val : 'N/A'}</td>
+                                    <td>{item.min !== null ? item.min : 'N/A'}</td>
+                                    <td>{item.max !== null ? item.max : 'N/A'}</td>
+                                </tr>
+                            ))}
                             </tbody>
                         </table>
                     )}
@@ -141,4 +146,4 @@ const DevicesPage = ({
     );
 };
 
-export default DevicesPage; 
+export default DevicesPage;
