@@ -1,5 +1,6 @@
 ARG SERVICE_NAME="dynamic-reporting"
 ARG SERVICE_VERSION="0.0.7"
+ARG SERVICE_VCS="https://gitlab.linemetrics.com/LineMetrics/Frontend-Services/in-app-dynamic-reporting"
 ARG BUILD_DATE
 ARG BUILD_REF
 
@@ -23,6 +24,7 @@ RUN npm i && \
 FROM nginx:1.27.3-alpine
 ARG SERVICE_NAME
 ARG SERVICE_VERSION
+ARG SERVICE_VCS
 ARG BUILD_DATE
 ARG BUILD_REF
 
@@ -46,5 +48,5 @@ LABEL \
     org.label-schema.url="https://www.linemetrics.com/" \
     org.label-schema.usage="https://www.linemetrics.com/" \
     org.label-schema.vcs-ref="${BUILD_REF}" \
-    org.label-schema.vcs-url="https://gitlab.linemetrics.com/LineMetrics/Frontend-Services/in-app-dynamic-reporting" \
+    org.label-schema.vcs-url="${SERVICE_VCS}" \
     org.label-schema.vendor="LineMetrics"
