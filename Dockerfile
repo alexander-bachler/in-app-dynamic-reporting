@@ -1,5 +1,5 @@
 ARG SERVICE_NAME="dynamic-reporting"
-ARG SERVICE_VERSION="0.0.5"
+ARG SERVICE_VERSION="0.0.6"
 ARG BUILD_DATE
 ARG BUILD_REF
 
@@ -29,7 +29,7 @@ ARG BUILD_REF
 WORKDIR /usr/share/nginx/html
 
 # Copy the build files from the build stage
-COPY --from=build /app/build .
+COPY --from=build /app/build apps/
 
 COPY nginx/default_local.conf /etc/nginx/conf.d/default.conf
 
