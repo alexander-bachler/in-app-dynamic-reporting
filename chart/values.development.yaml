@@ -10,26 +10,26 @@ appUpdateStrategy: RollingUpdate
 
 app_restapi_url: "https://restapi.linemetrics.com"
 
-#ingress:
+# ingress:
 # ingress allow all
 egress:
   cidr:
-  - name: int-felb
-    host: 192.168.110.10/32
-  - name: int-belb
-    host: 192.168.110.11/32
-  - name: t-systems
-    host: 212.166.107.128/28
+    - name: int-felb
+      host: 192.168.110.10/32
+    - name: int-belb
+      host: 192.168.110.11/32
+    - name: t-systems
+      host: 212.166.107.128/28
   pods:
-  - name: kube-dns
-    namespace: kube-system
-    labels:
-      - k8s-app: kube-dns
-    port: 53
-    protocol: TCP
-  - name: kube-dns
-    namespace: kube-system
-    labels:
-      - k8s-app: kube-dns
-    port: 53
-    protocol: UDP
+    - name: kube-dns
+      namespace: kube-system
+      labels:
+        - k8s-app: kube-dns
+      port: 53
+      protocol: TCP
+    - name: kube-dns
+      namespace: kube-system
+      labels:
+        - k8s-app: kube-dns
+      port: 53
+      protocol: UDP
