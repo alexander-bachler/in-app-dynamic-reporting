@@ -43,13 +43,13 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           volumeMounts:
-          - name: env
-            mountPath: /usr/share/nginx/html/.env
-            subPath: .env
+          - name: config
+            mountPath: /usr/share/nginx/html/apps/config.js
+            subPath: config.js
       volumes:
-      - name: env
+      - name: config
         configMap:
-          name: env-config
+          name: config.js
           defaultMode: 0555
       affinity:
         podAntiAffinity:
