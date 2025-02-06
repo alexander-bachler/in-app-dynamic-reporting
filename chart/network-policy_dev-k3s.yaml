@@ -1,0 +1,42 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-network-policy
+  namespace: dynamic-reporting
+spec:
+  policyTypes:
+    - Ingress
+    - Egress
+  podSelector:
+    matchLabels: {}
+  ingress:
+    - {}
+  egress:
+    - to:
+        - podSelector: {}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - ipBlock:
+            cidr: 212.166.107.128/28
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+    - to:
+        - ipBlock:
+            cidr: 192.168.110.10/32
+        - ipBlock:
+            cidr: 192.168.110.11/32
