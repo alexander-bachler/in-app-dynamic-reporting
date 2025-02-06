@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ .Values.appName | default "linemetrics" }}"
-  namespace: "{{ .Values.appNamespace | default "linemetrics" }}"
+  name: "{{.Values.appName | default 'linemetrics'}}"
+  namespace: "{{.Values.appNamespace | default 'linemetrics'}}"
 spec:
-  replicas: {{ .Values.appReplicas | default "3" }}
+  replicas: {{.Values.appReplicas | default "3"}}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: "{{ .Values.appName | default "linemetrics" }}"
+      app: "{{.Values.appName | default 'linemetrics'}}"
   minReadySeconds: 5
   strategy:
     rollingUpdate:
@@ -19,19 +19,23 @@ spec:
   template:
     metadata:
       labels:
-        app: "{{ .Values.appName | default "linemetrics" }}"
+        app: "{{.Values.appName | default 'linemetrics'}}"
       annotations:
-        rollme: {{ randAlphaNum 5 | quote }}
+        rollme: {{randAlphaNum 5 | quote}}
     spec:
       containers:
-        - name: "{{ .Values.appName | default "linemetrics" }}"
-          imagePullPolicy: "{{ .Values.imagePullPolicy | default "IfNotPresent" }}"
-          image: "{{ .Values.appImage | default "linemetrics" }}:{{ .Values.appTag | default "latest" }}"
-          #env: # not working for react apps
-          #- name: "REACT_APP_BASE_URL"
-          #  value: "{{ .Values.app_restapi_url }}"
+        - name: "{{.Values.appName | default 'linemetrics'}}"
+          imagePullPolicy: "{{.Values.imagePullPolicy | default 'IfNotPresent'}}"
+          image: "{{.Values.appImage | default 'linemetrics'}}:{{.Values.appTag | default 'latest'}}"
+          # env: # not working for react apps
+          # - name: "REACT_APP_BASE_URL"
+          #   value: "{{.Values.app_restapi_url}}"
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 100Mi
           ports:
-          - containerPort: 80
+            - containerPort: 80
           readinessProbe:
             tcpSocket:
               port: 80
@@ -43,21 +47,21 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           volumeMounts:
-          - name: config
-            mountPath: /usr/share/nginx/html/apps/config.js
-            subPath: config.js
+            - name: config
+              mountPath: /usr/share/nginx/html/apps/config.js
+              subPath: config.js
       volumes:
-      - name: config
-        configMap:
-          name: config.js
-          defaultMode: 0555
+        - name: config
+          configMap:
+            name: config.js
+            defaultMode: 0555
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - "{{ .Values.appName | default "linemetrics" }}"
-            topologyKey: "kubernetes.io/hostname"
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - "{{.Values.appName | default 'linemetrics'}}"
+              topologyKey: "kubernetes.io/hostname"

@@ -3,9 +3,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "config.js"
-  namespace: "{{ .Values.appNamespace | default "linemetrics" }}"
+  namespace: "{{.Values.appNamespace | default 'linemetrics'}}"
 data:
   config.js: |
     window.env = {
-      REACT_APP_BASE_URL: "{{ .Values.app_restapi_url }}"
+      REACT_APP_BASE_URL: "{{.Values.app_restapi_url}}"
     };
