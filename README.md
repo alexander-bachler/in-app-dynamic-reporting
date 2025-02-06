@@ -40,10 +40,10 @@ To build and run the project you need to have `node` and `npm` installed on your
 
 ## Development
 
-### Deployment DEV
+### Deployment DEV + Production
 
 The deployment of the project is done with Gitlab CI/CD.
-The pipeline for the build and deployment of the docker container is triggered by increasing the versions in the `Dockerfile` and `chart/Chart.yml` file.
+The pipeline for the build and deployment of the docker container is triggered by increasing the versions in the `Dockerfile`.
 
 To initiate the build of the container you need to increase the version in the `Dockerfile` file.
 ``` yaml
