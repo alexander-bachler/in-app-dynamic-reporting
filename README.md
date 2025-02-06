@@ -38,6 +38,29 @@ The project is structured in the following way:
 
 To build and run the project you need to have `node` and `npm` installed on your machine or Docker.
 
+## Development
+
+### Deployment DEV
+
+The deployment of the project is done with Gitlab CI/CD.
+The pipeline for the build and deployment of the docker container is triggered by increasing the versions in the `Dockerfile` and `chart/Chart.yml` file.
+
+To initiate the build of the container you need to increase the version in the `Dockerfile` file.
+``` yaml
+ARG SERVICE_NAME="dynamic-reporting"
+ARG SERVICE_VERSION="0.0.7" // increase the version -> 0.0.8
+ARG BUILD_DATE
+...
+```
+
+To initiate the deployment of the container you need to increase the version in the `chart/Chart.yml` file.
+``` yaml
+...
+type: application
+version: 0.0.12 // increase the version -> 0.0.13
+...
+```
+
 #### Build and run locally
 
 To build and run the project locally you need to have `node` and `npm` installed on your machine.
@@ -75,13 +98,17 @@ To add a new report for a specific account you need to follow these steps:
 5. Update the `package.json` file
    - Update the `name` field with the name of the report
    - Update the `scripts:build` field to the right path to the `./build/` folder in the root directory
-6. Copy the `.env.example` file and renaming it to `.env` and update the values to access the right account you are developing for
-7. Start the subproject
+6. **_For Development_** Copy the `.env.example` file and renaming it to `.env` and update the values to access the right account you are developing for
+7. Adapt the `index.html` file in the public directory of the new report - in line 8 (like in the example-reporting of 1994)
+   ``` html
+       <script src="../../../config.js"></script>
+   ```
+8. Start the subproject
     ```bash
     npm run start --workspace={{report-name from package.json}}
     ```
    
-8. Finish testing and development by starting the project with Docker and check if your changes are working
+9. Finish testing and development by starting the project with Docker and check if your changes are working
     ```bash
     docker-compose up --build
     ```
