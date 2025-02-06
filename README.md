@@ -53,7 +53,8 @@ ARG BUILD_DATE
 ...
 ```
 
-To initiate the deployment of the container you need to increase the version in the `chart/Chart.yml` file.
+If you changed the deployment you have to increase the version in the `chart/Chart.yml` file.
+For an normal deployment you don't have to increase the version of the helm chart.
 ``` yaml
 ...
 type: application
