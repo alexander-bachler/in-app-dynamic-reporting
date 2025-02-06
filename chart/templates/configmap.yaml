@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "config.js"
-  namespace: "{{.Values.appNamespace | default 'linemetrics'}}"
+  name: config.js
+  namespace: {{.Values.appNamespace | default "linemetrics"}}
 data:
   config.js: |
     window.env = {
