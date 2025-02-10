@@ -22,24 +22,6 @@ deploy-development:
   before_script:
     - export APPVERSION=$(cat chart/values.$CI_ENVIRONMENT_NAME.yaml | grep appTag | cut -d' ' -f2)
 
-dryrun-deploy-staging:
-  variables:
-    APP_NAME: "dynamic-reporting"
-    K3S_CLUSTERNAME: sta-k3s-lm3
-    K3S_NAMESPACE: "dynamic-reporting"
-    K3S_DEPLOY_USER: "dynamic-reporting-user"
-    K3S_CLUSTER: "https://172.16.1.60:6445"
-
-deploy-staging:
-  variables:
-    APP_NAME: "dynamic-reporting"
-    K3S_CLUSTERNAME: sta-k3s-lm3
-    K3S_NAMESPACE: "dynamic-reporting"
-    K3S_DEPLOY_USER: "dynamic-reporting-user"
-    K3S_CLUSTER: "https://172.16.1.60:6445"
-  before_script:
-    - export APPVERSION=$(cat chart/values.$CI_ENVIRONMENT_NAME.yaml | grep appTag | cut -d' ' -f2)
-
 dryrun-deploy-production:
   variables:
     APP_NAME: "dynamic-reporting"
