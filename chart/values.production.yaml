@@ -8,4 +8,4 @@ appReplicas: 3
 minReadySeconds: 5
 appUpdateStrategy: RollingUpdate
 
-app_restapi_url: "https://restapi.linemetrics.dev"
+app_restapi_url: "https://restapi.linemetrics.com"
