@@ -1,7 +1,8 @@
 ---
 include:
   - project: 'LineMetrics/pipeline-components/org/config'
-    file: lm_default.yml
+    file: lm_prod_untagged.yml
+    # file: lm_default.yml
 
 # Override development-deploy templates
 dryrun-deploy-development:
