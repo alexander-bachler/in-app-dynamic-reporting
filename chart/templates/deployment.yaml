@@ -5,7 +5,7 @@ metadata:
   name: '{{.Values.appName | default "linemetrics"}}'
   namespace: '{{.Values.appNamespace | default "linemetrics"}}'
 spec:
-  replicas: '{{.Values.appReplicas | default "3"}}'
+  replicas: {{.Values.appReplicas | default "3"}}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
