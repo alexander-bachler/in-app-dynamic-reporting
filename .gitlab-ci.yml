@@ -7,19 +7,19 @@ include:
 # Override development-deploy templates
 dryrun-deploy-development:
   variables:
-    APP_NAME: "dynamic-reporting"
-    K3S_CLUSTERNAME: dev-k3s
-    K3S_NAMESPACE: "dynamic-reporting"
-    K3S_DEPLOY_USER: "dynamic-reporting-user"
-    K3S_CLUSTER: "https://192.168.110.11:6445"
+    APP_NAME: "lm-dynamic-reporting"
+    K3S_CLUSTERNAME: dev-rke2
+    K3S_NAMESPACE: "lm-dynamic-reporting"
+    K3S_DEPLOY_USER: "lm-dynamic-reporting-user"
+    K3S_CLUSTER: "https://192.168.110.11:6446"
 
 deploy-development:
   variables:
-    APP_NAME: "dynamic-reporting"
-    K3S_CLUSTERNAME: dev-k3s
-    K3S_NAMESPACE: "dynamic-reporting"
-    K3S_DEPLOY_USER: "dynamic-reporting-user"
-    K3S_CLUSTER: "https://192.168.110.11:6445"
+    APP_NAME: "lm-dynamic-reporting"
+    K3S_CLUSTERNAME: dev-rke2
+    K3S_NAMESPACE: "lm-dynamic-reporting"
+    K3S_DEPLOY_USER: "lm-dynamic-reporting-user"
+    K3S_CLUSTER: "https://192.168.110.11:6446"
   before_script:
     - export APPVERSION=$(cat chart/values.$CI_ENVIRONMENT_NAME.yaml | grep appTag | cut -d' ' -f2)
 

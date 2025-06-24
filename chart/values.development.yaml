@@ -1,6 +1,6 @@
 ---
-appName: dynamic-reporting
-appNamespace: dynamic-reporting
+appName: lm-dynamic-reporting
+appNamespace: lm-dynamic-reporting
 appImage: "registry.linemetrics.dev/linemetrics/frontend-services/in-app-dynamic-reporting"
 appTag: edge
 imagePullPolicy: "Always"
