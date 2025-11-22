@@ -1,116 +1,186 @@
-# in-app-dynamic-reporting 
+# In-App Dynamic Reporting
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
+A dynamic reporting tool for the LineMetrics platform, providing interactive data visualization and analysis capabilities through a React-based monorepo architecture.
 
-## Getting started
+## 🚀 Features
 
-To make it easy for you all set up sets will be described here.
+- **Monorepo Architecture**: Organized with npm workspaces for efficient code sharing
+- **Account-Specific Reports**: Customizable reports for different LineMetrics accounts
+- **Global Reports**: Cross-account reporting capabilities (CO2, Energy, etc.)
+- **Shared API Client**: OAuth 2.0 authentication with LRU caching
+- **Docker Support**: Containerized deployment with nginx
+- **CI/CD Ready**: GitLab CI/CD pipeline integration
 
+## 📁 Project Structure
 
-## About this project
-
-This project is part of the LineMetrics Frontend Services.
-Its main purpose is to provide a dynamic reporting tool for the LineMetrics platform and therefore generating more data to visualize and analyze.
-
-
-### Project structure
-
-This project is a monorepo managed with npm workspace.
-Therefore in the root directory, you will find the `package.json` file which contains the configuration for the workspace.
-
-TODO: Add more information about the project structure
-
-Consider npm install if they are need in every subproject or just in one subproject.
-How to install a dependency for all subprojects.
-```bash
-npm install --workspaces {{package-name}}
+```
+apps/
+├── shared/
+│   └── api-client/          # Shared TypeScript API client (@project/api-client)
+├── accounts/
+│   └── {accountId}/
+│       └── {report-name}/   # Account-specific reports
+├── global/
+│   ├── co2/                 # Global CO2 reporting
+│   ├── energy/              # Global energy reporting
+│   ├── map/                 # Interactive map reports
+│   └── ...                  # Other global reports
+└── examples/
+    └── example/             # Template for new reports
 ```
 
-#### Benefits of a monorepo
-- Easier code sharing
-- Easier dependency management
-- Easier to maintain
+## 🛠️ Quick Start
 
-The project is structured in the following way:
- - `apps/` contains the source code of the different applications
+### Prerequisites
 
-### Build and run the project
+- Node.js 18+ and npm
+- Docker (optional, for containerized development)
 
-To build and run the project you need to have `node` and `npm` installed on your machine or Docker.
-
-## Development
-
-### Deployment DEV + Production
-
-The deployment of the project is done with Gitlab CI/CD.
-The pipeline for the build and deployment of the docker container is triggered by increasing the versions in the `Dockerfile`.
-
-To initiate the build of the container you need to increase the version in the `Dockerfile` file.
-``` yaml
-ARG SERVICE_NAME="dynamic-reporting"
-ARG SERVICE_VERSION="0.0.7" // increase the version -> 0.0.8
-ARG BUILD_DATE
-...
-```
-
-If you changed the deployment you have to increase the version in the `chart/Chart.yml` file.
-For an normal deployment you don't have to increase the version of the helm chart.
-``` yaml
-...
-type: application
-version: 0.0.12 // increase the version -> 0.0.13
-...
-```
-
-#### Build and run locally
-
-To build and run the project locally you need to have `node` and `npm` installed on your machine.
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/YOUR-USERNAME/in-app-dynamic-reporting.git
+cd in-app-dynamic-reporting
+
+# Install dependencies
 npm install
-npm run start --workspace={{report-name from package.json}}
 ```
 
-Example for specific report:
+### Development
+
 ```bash
+# Run a specific report
 npm run start --workspace=example-reporting
+
+# Example for CO2 report
+npm run start --workspace=co2
 ```
 
-#### Build and run with Docker
-
-To build and run the project with Docker you need to have Docker installed on your machine.
+### Docker Development
 
 ```bash
+# Build and run with Docker
 docker-compose up --build
+
+# Access reports at:
+# http://localhost:1000/{folder}/{report-name}/index.html
 ```
 
-The reports will be available at `http://localhost:1000/{{folder}}/{{report-name}}/index.html`
+## 📊 Available Reports
 
+### Global Reports
+- **CO2**: Carbon footprint analysis and tracking
+- **Energy**: Energy consumption monitoring
+- **Map**: Interactive geographical data visualization
+- **Energiebericht**: Comprehensive energy reporting
 
+### Account-Specific Reports
+- Located in `apps/accounts/{accountId}/{report-name}/`
+- Customizable per LineMetrics account
 
-## Add a new report for a specific account
+## 🔧 Creating a New Report
 
-To add a new report for a specific account you need to follow these steps:
-
-1. Create new feature branch from `main` branch after you have cloned the repository and pulled all changes with `git pull`
-2. Create a new folder in the `apps/accounts` directory with the accountId
-3. Create a new folder in the created folder with the name of the report
-4. Copy the `example-reporting` folder and rename it to the name of the report
-5. Update the `package.json` file
-   - Update the `name` field with the name of the report
-   - Update the `scripts:build` field to the right path to the `./build/` folder in the root directory
-6. **_For Development_** Copy the `.env.example` file and renaming it to `.env` and update the values to access the right account you are developing for
-7. Adapt the `index.html` file in the public directory of the new report - in line 8 (like in the example-reporting of 1994)
-   ``` html
-       <script src="../../../config.js"></script>
+1. **Create feature branch**:
+   ```bash
+   git checkout -b feature/new-report-name
    ```
-8. Start the subproject
-    ```bash
-    npm run start --workspace={{report-name from package.json}}
-    ```
+
+2. **For account-specific report**:
+   ```bash
+   # Create directory structure
+   mkdir -p apps/accounts/{accountId}/{report-name}
    
-9. Finish testing and development by starting the project with Docker and check if your changes are working
-    ```bash
-    docker-compose up --build
-    ```
+   # Copy template
+   cp -r apps/examples/example apps/accounts/{accountId}/{report-name}
+   ```
+
+3. **Update configuration**:
+   - Modify `package.json` name and build path
+   - Update `public/index.html` config.js path
+   - Configure environment variables for development
+
+4. **Development setup**:
+   ```bash
+   # Copy environment template
+   cp .env.example .env
+   # Update with your credentials
    
+   # Start development server
+   npm run start --workspace={report-name}
+   ```
+
+## 🏗️ Build & Deployment
+
+### Local Build
+
+```bash
+# Build all reports
+npm run build
+
+# Build specific report
+npm run build --workspace={report-name}
+```
+
+### Production Deployment
+
+The project uses GitLab CI/CD for automated deployment:
+
+1. **Update version** in `Dockerfile`:
+   ```dockerfile
+   ARG SERVICE_VERSION="0.0.8"  # Increment version
+   ```
+
+2. **Push changes** - Pipeline automatically triggers on version changes
+
+3. **Deployment targets**:
+   - **Development**: RKE2 cluster (`lm-dynamic-reporting` namespace)
+   - **Production**: K3S cluster (`dynamic-reporting` namespace)
+
+## 🔐 API Authentication
+
+The shared API client (`@project/api-client`) handles:
+- OAuth 2.0 client credentials flow
+- Automatic token refresh
+- LRU caching for improved performance
+- LineMetrics API v2 integration
+
+## 🧪 Testing
+
+```bash
+# Test specific report
+npm run test --workspace={report-name}
+
+# Test all workspaces
+npm run test --workspaces
+```
+
+## 📚 Documentation
+
+- [Project Architecture](./CLAUDE.md) - Detailed technical documentation
+- [API Client Documentation](./apps/shared/api-client/README.md)
+- [Deployment Guide](./chart/README.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🏢 About LineMetrics
+
+This project is part of the LineMetrics Frontend Services, providing dynamic reporting capabilities for the LineMetrics IoT platform.
+
+---
+
+**Note**: This is a mirror of the original GitLab repository. For internal development and CI/CD, please refer to the GitLab instance.
