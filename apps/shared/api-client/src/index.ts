@@ -17,7 +17,10 @@ class ApiClient {
     private clientCredentials: ClientCredentials;
 
     constructor() {
-        this.baseUrl = window.env.REACT_APP_BASE_URL;
+        // Use window.env in production (Docker), process.env in development
+        this.baseUrl = (window.env && window.env.REACT_APP_BASE_URL)
+            ? window.env.REACT_APP_BASE_URL
+            : process.env.REACT_APP_BASE_URL;
         this.accessToken = ''; // Variable für den Access Token
         this.clientCredentials = {id: '', secret: ''}; // Variable für Client Credentials
     }

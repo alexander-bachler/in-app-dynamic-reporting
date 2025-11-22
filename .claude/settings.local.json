@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(cat apps/examples/example/.env)",
+      "Bash(cat .env)",
+      "Bash(npm run build)",
+      "Bash(pkill -f \"react-scripts start\")",
+      "Bash(lsof -ti:3000)",
+      "Bash(xargs kill -9)",
+      "Bash(pkill -f \"react-scripts\")",
+      "Bash(npm install pdfjs-dist --workspace=map-reporting)",
+      "Bash(npm uninstall pdfjs-dist --workspace=map-reporting)",
+      "Bash(npm install pdfjs-dist@4.8.69 --workspace=map-reporting)",
+      "Bash(npm install pdfjs-dist@4.4.168 --workspace=map-reporting)",
+      "Bash(curl -o apps/global/map/public/pdf.worker.min.js https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.js)",
+      "Bash(curl -o pdf.worker.min.js https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.js)",
+      "Bash(curl -o /Users/alexbachler/Entwicklung/in-app-dynamic-reporting/apps/global/map/public/pdf.worker.min.js https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.js)",
+      "Bash(curl -L -o /Users/alexbachler/Entwicklung/in-app-dynamic-reporting/apps/global/map/public/pdf.worker.min.js https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.js)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
