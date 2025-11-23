@@ -95,6 +95,8 @@ const SedlbauerMonitor = ({ data = [] }) => {
                         type: 'scatter',
                         backgroundColor: function(context) {
                             const point = context.raw;
+                            if (!point) return 'rgba(75, 192, 192, 0.7)';
+
                             // Check if point is in risk zone (above LIM curve)
                             const temp = point.x;
                             let limThreshold;

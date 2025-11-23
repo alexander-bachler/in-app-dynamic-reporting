@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
 import { getVentilationRecommendation } from '../utils/climate-math';
-import { format } from 'date-fns';
 
 /**
  * Intelligent Ventilation Decision Widget
@@ -33,15 +33,13 @@ const VentilationWidget = ({ indoorData = [], outdoorData = [] }) => {
         }
 
         // Prepare data
-        const labels = indoorData.map(point => format(new Date(point.timestamp), 'dd.MM HH:mm'));
-
         const indoorAHData = indoorData.map(point => ({
-            x: point.timestamp,
+            x: new Date(point.timestamp),
             y: point.absoluteHumidity
         }));
 
         const outdoorAHData = outdoorData.map(point => ({
-            x: point.timestamp,
+            x: new Date(point.timestamp),
             y: point.absoluteHumidity
         }));
 
@@ -49,7 +47,6 @@ const VentilationWidget = ({ indoorData = [], outdoorData = [] }) => {
         chartInstance.current = new Chart(ctx, {
             type: 'line',
             data: {
-                labels,
                 datasets: [
                     {
                         label: 'Innen (absolute Feuchte)',
