@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter } from 'react-router-dom';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -32,24 +32,7 @@ function App() {
     const [wallData, setWallData] = useState([]);
     const [organData, setOrganData] = useState([]);
 
-    // Date range
-    const [dateFrom, setDateFrom] = useState(startOfDay(subDays(new Date(), 30)).toISOString());
-    const [dateTo, setDateTo] = useState(endOfDay(new Date()).toISOString());
-
-    useEffect(() => {
-        // Extract token from URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get('token');
-
-        if (token) {
-            apiClient.setAccessToken(token);
-            fetchDevices();
-        } else {
-            fetchDevices();
-        }
-    }, []);
-
-    const fetchDevices = async () => {
+    const fetchDevices = useCallback(async () => {
         setLoading(true);
         try {
             const response = await apiClient.getAllDevices();
@@ -61,7 +44,18 @@ function App() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [apiClient]);
+
+    useEffect(() => {
+        // Extract token from URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+
+        if (token) {
+            apiClient.setAccessToken(token);
+        }
+        fetchDevices();
+    }, [apiClient, fetchDevices]);
 
     const fetchSensorData = async (deviceId, inputId, days = 30) => {
         const from = startOfDay(subDays(new Date(), days)).toISOString();
