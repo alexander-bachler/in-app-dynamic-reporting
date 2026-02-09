@@ -58,7 +58,7 @@ cp .env.example .env
 ```
 REACT_APP_CLIENT_ID=your_client_id
 REACT_APP_CLIENT_SECRET=your_client_secret
-REACT_APP_BASE_URL=https://api.linemetrics.com/v2
+REACT_APP_BASE_URL=https://rest-api.linemetrics.com/v2
 ```
 
 ## Entwicklung

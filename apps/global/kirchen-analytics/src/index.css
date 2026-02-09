@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+/* LineMetrics design system (from webapp theme) */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 236 5% 23%;
+    --card: 0 0% 100%;
+    --card-foreground: 236 5% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 236 5% 23%;
+    /* Primary: LM gray (navbar, primary buttons) #7d7e81 -> #646567 */
+    --primary: 240 2% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 236 5% 23%;
+    --muted: 0 0% 97%;
+    --muted-foreground: 220 3% 46%;
+    --accent: 214 61% 61%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 91%;
+    --input: 0 0% 91%;
+    --ring: 240 2% 50%;
+    --radius: 3px;
+    /* LineMetrics brand */
+    --lm-green: 76 65% 38%;
+    --lm-green-foreground: 0 0% 100%;
+  }
+  .dark {
+    --background: 240 4% 16%;
+    --foreground: 210 40% 98%;
+    --card: 240 4% 16%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 4% 16%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 240 4% 16%;
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 214 61% 61%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 213 27% 84%;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Segoe UI', Ubuntu, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: hsl(var(--foreground));
+  background: #f8f8f8;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* LineMetrics panel-style cards */
+.lm-panel {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.lm-panel-heading {
+  background: linear-gradient(to bottom, #e7e7e7 0%, #dadada 100%);
+  border-bottom: 1px solid #e3e3e3;
+  padding: 10px 15px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Primary button: LM gray gradient */
+.btn-lm-primary {
+  background: linear-gradient(to bottom, #7d7e81 0%, #646567 100%);
+  border-color: #5f6062;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.btn-lm-primary:hover {
+  background: linear-gradient(to bottom, #707174 0%, #56575a 100%);
+  border-color: #5f6062;
+}
+
+.btn-lm-success {
+  background: linear-gradient(to bottom, #94bd07 0%, #6d8c05 100%);
+  border-color: #668205;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.btn-lm-success:hover {
+  background: linear-gradient(to bottom, #839909 0%, #5f7a04 100%);
+  border-color: #668205;
+}

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Chart } from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { calculateSaltRisk } from '../utils/climate-math';
 import { format } from 'date-fns';
 
-Chart.register(annotationPlugin);
+// Register Chart.js components
+Chart.register(...registerables, annotationPlugin);
 
 /**
  * Salt Monitor for Masonry Protection

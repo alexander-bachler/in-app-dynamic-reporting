@@ -11,6 +11,10 @@
     {
       "name": "Map Reporting",
       "path": "map"
+    },
+    {
+      "name": "Kirchenklima Analytics",
+      "path": "kirchen-analytics"
     }
   ]
 }

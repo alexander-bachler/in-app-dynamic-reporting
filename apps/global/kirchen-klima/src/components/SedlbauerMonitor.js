@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Chart } from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
-Chart.register(annotationPlugin);
+// Register Chart.js components
+Chart.register(...registerables, annotationPlugin);
 
 /**
  * Sedlbauer Monitor - Isopleth Diagram for Mold Risk Assessment
@@ -95,7 +96,7 @@ const SedlbauerMonitor = ({ data = [] }) => {
                         type: 'scatter',
                         backgroundColor: function(context) {
                             const point = context.raw;
-                            if (!point) return 'rgba(75, 192, 192, 0.7)';
+                            if (!point || !point.x || point.x === undefined) return 'rgba(75, 192, 192, 0.7)';
 
                             // Check if point is in risk zone (above LIM curve)
                             const temp = point.x;

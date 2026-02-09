@@ -12,6 +12,11 @@
  * @returns {number} Absolute humidity in g/m³
  */
 export function calculateAbsoluteHumidity(temp, rh) {
+    // Validate input parameters
+    if (temp === undefined || temp === null || rh === undefined || rh === null) {
+        return 0; // Return 0 for undefined values
+    }
+    
     const mw = 18.016; // Molecular weight of water vapor (g/mol)
     const r = 8314.3;  // Universal gas constant (J/(kmol·K))
     const tk = temp + 273.15; // Temperature in Kelvin
@@ -210,6 +215,19 @@ export function calculateMoldRisk(temp, rh, substratClass = 1) {
  * @returns {object} Ventilation recommendation
  */
 export function getVentilationRecommendation(indoorTemp, indoorRH, outdoorTemp, outdoorRH, buffer = 0.5) {
+    // Validate input parameters
+    if (indoorTemp === undefined || indoorTemp === null || indoorRH === undefined || indoorRH === null ||
+        outdoorTemp === undefined || outdoorTemp === null || outdoorRH === undefined || outdoorRH === null) {
+        return {
+            recommendation: 'Unbekannt',
+            color: 'yellow',
+            action: 'Sensordaten überprüfen',
+            indoorAH: 0,
+            outdoorAH: 0,
+            difference: 0
+        };
+    }
+
     const indoorAH = calculateAbsoluteHumidity(indoorTemp, indoorRH);
     const outdoorAH = calculateAbsoluteHumidity(outdoorTemp, outdoorRH);
 
@@ -253,6 +271,16 @@ export function getVentilationRecommendation(indoorTemp, indoorRH, outdoorTemp, 
  * @returns {object} Organ protection assessment
  */
 export function checkOrganProtection(temp, rh) {
+    // Validate input parameters
+    if (temp === undefined || temp === null || rh === undefined || rh === null) {
+        return {
+            inCorridor: false,
+            risk: 'unbekannt',
+            warning: 'Keine Daten verfügbar',
+            recommendation: 'Sensordaten überprüfen'
+        };
+    }
+
     // Typical climate corridor for pipe organs
     const tempMin = 8;
     const tempMax = 20;

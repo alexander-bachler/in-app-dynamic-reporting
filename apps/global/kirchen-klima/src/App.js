@@ -6,6 +6,7 @@ import { Spinner, Alert } from 'react-bootstrap';
 import ApiClient from '@project/api-client';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 import { calculateAbsoluteHumidity } from './utils/climate-math';
+import { demoScenarios, convertMockDataForWidget } from './utils/mockData';
 
 // Import widgets
 import SedlbauerMonitor from './components/SedlbauerMonitor';
@@ -31,13 +32,52 @@ function App() {
     const [outdoorVentilationData, setOutdoorVentilationData] = useState([]);
     const [wallData, setWallData] = useState([]);
     const [organData, setOrganData] = useState([]);
+    
+    // Demo mode
+    const [demoMode, setDemoMode] = useState(false);
+    const [selectedScenario, setSelectedScenario] = useState('optimal');
+    const [showDemoMenu, setShowDemoMenu] = useState(false);
 
     const fetchDevices = useCallback(async () => {
         setLoading(true);
         try {
             const response = await apiClient.getAllDevices();
-            console.log('Devices:', response);
-            setDevices(response);
+            console.log('Raw API Response:', response);
+            console.log('First device structure:', response[0]);
+            
+            // Erstmal nur die ersten 5 Geräte für Debug
+            const limitedDevices = response.slice(0, 5);
+            
+            // Für jedes Gerät die Inputs laden
+            const devicesWithInputs = await Promise.all(
+                limitedDevices.map(async (device, index) => {
+                    console.log(`Processing device ${index}:`, device);
+                    
+                    try {
+                        const deviceDetails = await apiClient.getInputsForDevice({ deviceId: device.id });
+                        console.log(`Device ${device.id} details:`, deviceDetails);
+                        
+                        const processedDevice = {
+                            id: device.id,
+                            name: device.title || device.name || device.payload?.title || `Device ${device.id}`,
+                            inputs: deviceDetails.included || deviceDetails.inputs || []
+                        };
+                        
+                        console.log(`Processed device:`, processedDevice);
+                        return processedDevice;
+                    } catch (err) {
+                        console.warn(`Fehler beim Laden der Inputs für Device ${device.id}:`, err);
+                        return {
+                            id: device.id,
+                            name: device.title || device.name || device.payload?.title || `Device ${device.id}`,
+                            inputs: []
+                        };
+                    }
+                })
+            );
+            
+            console.log('Final devices with inputs:', devicesWithInputs);
+            setDevices(devicesWithInputs);
         } catch (err) {
             console.error('Fehler beim Abrufen der Geräte:', err);
             setError('Fehler beim Abrufen der Geräte. Bitte überprüfen Sie die Verbindung.');
@@ -57,12 +97,41 @@ function App() {
         fetchDevices();
     }, [apiClient, fetchDevices]);
 
+    // Close demo menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showDemoMenu && !event.target.closest('.demo-controls')) {
+                setShowDemoMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showDemoMenu]);
+
     const fetchSensorData = async (deviceId, inputId, days = 30) => {
-        const from = startOfDay(subDays(new Date(), days)).toISOString();
-        const to = endOfDay(new Date()).toISOString();
+        const from = startOfDay(subDays(new Date(), days)).getTime();
+        const to = endOfDay(new Date()).getTime();
 
         try {
-            const response = await apiClient.getInputData(deviceId, inputId, from, to);
+            // Falls inputId undefined ist (Gerät direkt ausgewählt), verwende eine Standard-Input-ID
+            if (!inputId) {
+                console.warn(`Keine Input-ID für Device ${deviceId}, versuche Gerätedaten zu laden`);
+                // Versuche zuerst die Inputs für das Gerät zu finden
+                const deviceDetails = await apiClient.getInputsForDevice({ deviceId });
+                const inputs = deviceDetails.included || deviceDetails.inputs || [];
+                if (inputs && inputs.length > 0) {
+                    inputId = inputs[0].id; // Verwende den ersten Input
+                    console.log(`Verwende ersten Input: ${inputId}`);
+                } else {
+                    console.error(`Keine Inputs für Device ${deviceId} gefunden`);
+                    return [];
+                }
+            }
+
+            const response = await apiClient.getDataForInput(from, to, inputId);
             return response;
         } catch (err) {
             console.error(`Fehler beim Abrufen der Daten für Device ${deviceId}, Input ${inputId}:`, err);
@@ -98,7 +167,9 @@ function App() {
             const promises = [];
 
             if (selectedIndoorSensor) {
-                const [deviceId, inputId] = selectedIndoorSensor.split(':');
+                const parts = selectedIndoorSensor.split(':');
+                const deviceId = parts[0];
+                const inputId = parts[1]; // kann undefined sein bei direkter Gerätauswahl
                 promises.push(
                     fetchSensorData(deviceId, inputId, 30).then(data => {
                         const processed = processSensorData(data, 'indoor');
@@ -109,7 +180,9 @@ function App() {
             }
 
             if (selectedOutdoorSensor) {
-                const [deviceId, inputId] = selectedOutdoorSensor.split(':');
+                const parts = selectedOutdoorSensor.split(':');
+                const deviceId = parts[0];
+                const inputId = parts[1]; // kann undefined sein bei direkter Gerätauswahl
                 promises.push(
                     fetchSensorData(deviceId, inputId, 7).then(data => {
                         const processed = processSensorData(data, 'outdoor');
@@ -119,7 +192,9 @@ function App() {
             }
 
             if (selectedWallSensor) {
-                const [deviceId, inputId] = selectedWallSensor.split(':');
+                const parts = selectedWallSensor.split(':');
+                const deviceId = parts[0];
+                const inputId = parts[1]; // kann undefined sein bei direkter Gerätauswahl
                 promises.push(
                     fetchSensorData(deviceId, inputId, 7).then(data => {
                         const processed = processSensorData(data, 'wall');
@@ -129,7 +204,9 @@ function App() {
             }
 
             if (selectedOrganSensor) {
-                const [deviceId, inputId] = selectedOrganSensor.split(':');
+                const parts = selectedOrganSensor.split(':');
+                const deviceId = parts[0];
+                const inputId = parts[1]; // kann undefined sein bei direkter Gerätauswahl
                 promises.push(
                     fetchSensorData(deviceId, inputId, 7).then(data => {
                         const processed = processSensorData(data, 'organ');
@@ -147,9 +224,50 @@ function App() {
         }
     };
 
+    const loadDemoData = (scenarioKey = selectedScenario) => {
+        const scenario = demoScenarios[scenarioKey];
+        if (!scenario) return;
+
+        console.log(`Loading demo scenario: ${scenario.name}`);
+        
+        // Konvertiere Mock-Daten für Widgets
+        const indoorData = convertMockDataForWidget(scenario.indoor);
+        const outdoorData = convertMockDataForWidget(scenario.outdoor);
+        const organData = convertMockDataForWidget(scenario.organ);
+        const wallData = convertMockDataForWidget(scenario.wall);
+
+        // Setze Daten für alle Widgets
+        setSedlbauerData(indoorData);
+        setIndoorVentilationData(indoorData);
+        setOutdoorVentilationData(outdoorData);
+        setOrganData(organData);
+        setWallData(wallData);
+
+        // Aktiviere Demo-Modus
+        setDemoMode(true);
+        setSelectedScenario(scenarioKey);
+        
+        console.log(`Demo-Daten geladen: ${scenario.description}`);
+    };
+
+    const exitDemoMode = () => {
+        setDemoMode(false);
+        // Lösche alle Daten
+        setSedlbauerData([]);
+        setIndoorVentilationData([]);
+        setOutdoorVentilationData([]);
+        setOrganData([]);
+        setWallData([]);
+        console.log('Demo-Modus beendet');
+    };
+
     return (
         <HashRouter>
-            <div className="container-fluid mt-4" style={{ position: 'relative' }}>
+            <div className="app-container" style={{ 
+                maxHeight: '100vh', 
+                overflow: 'auto',
+                padding: '0.75rem'
+            }}>
                 {loading && (
                     <div className="spinner-overlay d-flex justify-content-center align-items-center" style={{
                         position: 'fixed',
@@ -164,10 +282,10 @@ function App() {
                     </div>
                 )}
 
-                <header className="mb-4">
-                    <h1 className="display-4">🏛️ Kirchen-Klima-Monitor</h1>
-                    <p className="lead">
-                        Spezialisiertes Monitoring-System für sakrale Gebäude - Schutz von Orgel, Mauerwerk und Kunstwerken
+                <header className="mb-2">
+                    <h2 className="mb-1">🏛️ Kirchen-Klima-Monitor</h2>
+                    <p className="text-muted small mb-2">
+                        Monitoring für sakrale Gebäude - Schutz von Orgel, Mauerwerk und Kunstwerken
                     </p>
                 </header>
 
@@ -177,92 +295,186 @@ function App() {
                     </Alert>
                 )}
 
-                <div className="card mb-4">
-                    <div className="card-header">
-                        <h5>Sensor-Konfiguration</h5>
+                <div className="card mb-3 sensor-config-compact">
+                    <div className="card-header d-flex justify-content-between align-items-center py-2">
+                        <h6 className="mb-0">Sensor-Konfiguration</h6>
+                        <div className="demo-controls position-relative">
+                            {!demoMode ? (
+                                <div>
+                                    <button 
+                                        className="btn btn-info btn-sm py-1 px-2" 
+                                        onClick={() => setShowDemoMenu(!showDemoMenu)}
+                                    >
+                                        🎭 Demo
+                                    </button>
+                                    {showDemoMenu && (
+                                        <div className="position-absolute bg-white border rounded shadow p-2 mt-1" style={{zIndex: 1000, minWidth: '300px', right: 0}}>
+                                            <div className="mb-2"><strong>Demo-Szenarien:</strong></div>
+                                            {Object.entries(demoScenarios).map(([key, scenario]) => (
+                                                <button 
+                                                    key={key}
+                                                    className="btn btn-outline-primary btn-sm d-block w-100 mb-2 text-start py-1" 
+                                                    onClick={() => {
+                                                        loadDemoData(key);
+                                                        setShowDemoMenu(false);
+                                                    }}
+                                                >
+                                                    <strong>{scenario.name}</strong><br/>
+                                                    <small className="text-muted">{scenario.description}</small>
+                                                </button>
+                                            ))}
+                                            <button 
+                                                className="btn btn-sm btn-outline-secondary w-100 py-1"
+                                                onClick={() => setShowDemoMenu(false)}
+                                            >
+                                                Abbrechen
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="demo-active">
+                                    <span className="badge bg-info me-2">
+                                        🎭 {demoScenarios[selectedScenario]?.name}
+                                    </span>
+                                    <button 
+                                        className="btn btn-sm btn-outline-secondary me-2 py-1 px-2"
+                                        onClick={exitDemoMode}
+                                    >
+                                        Beenden
+                                    </button>
+                                    <button 
+                                        className="btn btn-sm btn-outline-info py-1 px-2"
+                                        onClick={() => setShowDemoMenu(!showDemoMenu)}
+                                    >
+                                        Wechseln
+                                    </button>
+                                    {showDemoMenu && (
+                                        <div className="position-absolute bg-white border rounded shadow p-2 mt-1" style={{zIndex: 1000, minWidth: '250px', right: 0}}>
+                                            {Object.entries(demoScenarios).map(([key, scenario]) => (
+                                                <button 
+                                                    key={key}
+                                                    className="btn btn-outline-primary btn-sm d-block w-100 mb-1 py-1" 
+                                                    onClick={() => {
+                                                        loadDemoData(key);
+                                                        setShowDemoMenu(false);
+                                                    }}
+                                                >
+                                                    {scenario.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className="card-body">
-                        <div className="row">
+                    <div className="card-body py-2">
+                        <div className="row g-2">
                             <div className="col-md-3">
-                                <label className="form-label">Innensensor (Temp/Feuchte)</label>
+                                <label className="form-label-compact">🏛️ Innen</label>
                                 <select
-                                    className="form-select"
+                                    className="form-select form-select-sm"
                                     value={selectedIndoorSensor}
                                     onChange={(e) => setSelectedIndoorSensor(e.target.value)}
                                 >
-                                    <option value="">-- Sensor auswählen --</option>
+                                    <option value="">-- Auswählen --</option>
                                     {devices.map(device => (
                                         <optgroup key={device.id} label={device.name || `Device ${device.id}`}>
-                                            {device.inputs && device.inputs.map(input => (
-                                                <option key={input.id} value={`${device.id}:${input.id}`}>
-                                                    {input.name || `Input ${input.id}`}
+                                            {device.inputs && device.inputs.length > 0 ? (
+                                                device.inputs.map(input => (
+                                                    <option key={input.id} value={`${device.id}:${input.id}`}>
+                                                        {input.attributes?.title || input.attributes?.alias || input.name || input.title || `Input ${input.id}`}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option value={device.id}>
+                                                    {device.name} (Gerät direkt)
                                                 </option>
-                                            ))}
+                                            )}
                                         </optgroup>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-3">
-                                <label className="form-label">Außensensor (Temp/Feuchte)</label>
+                                <label className="form-label-compact">🌤️ Außen</label>
                                 <select
-                                    className="form-select"
+                                    className="form-select form-select-sm"
                                     value={selectedOutdoorSensor}
                                     onChange={(e) => setSelectedOutdoorSensor(e.target.value)}
                                 >
-                                    <option value="">-- Sensor auswählen --</option>
+                                    <option value="">-- Auswählen --</option>
                                     {devices.map(device => (
                                         <optgroup key={device.id} label={device.name || `Device ${device.id}`}>
-                                            {device.inputs && device.inputs.map(input => (
-                                                <option key={input.id} value={`${device.id}:${input.id}`}>
-                                                    {input.name || `Input ${input.id}`}
+                                            {device.inputs && device.inputs.length > 0 ? (
+                                                device.inputs.map(input => (
+                                                    <option key={input.id} value={`${device.id}:${input.id}`}>
+                                                        {input.attributes?.title || input.attributes?.alias || input.name || input.title || `Input ${input.id}`}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option value={device.id}>
+                                                    {device.name} (Gerät direkt)
                                                 </option>
-                                            ))}
+                                            )}
                                         </optgroup>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-3">
-                                <label className="form-label">Wand-Sensor (Feuchte)</label>
+                                <label className="form-label-compact">🧱 Wand</label>
                                 <select
-                                    className="form-select"
+                                    className="form-select form-select-sm"
                                     value={selectedWallSensor}
                                     onChange={(e) => setSelectedWallSensor(e.target.value)}
                                 >
-                                    <option value="">-- Sensor auswählen --</option>
+                                    <option value="">-- Auswählen --</option>
                                     {devices.map(device => (
                                         <optgroup key={device.id} label={device.name || `Device ${device.id}`}>
-                                            {device.inputs && device.inputs.map(input => (
-                                                <option key={input.id} value={`${device.id}:${input.id}`}>
-                                                    {input.name || `Input ${input.id}`}
+                                            {device.inputs && device.inputs.length > 0 ? (
+                                                device.inputs.map(input => (
+                                                    <option key={input.id} value={`${device.id}:${input.id}`}>
+                                                        {input.attributes?.title || input.attributes?.alias || input.name || input.title || `Input ${input.id}`}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option value={device.id}>
+                                                    {device.name} (Gerät direkt)
                                                 </option>
-                                            ))}
+                                            )}
                                         </optgroup>
                                     ))}
                                 </select>
                             </div>
                             <div className="col-md-3">
-                                <label className="form-label">Orgel-Sensor (Temp/Feuchte)</label>
+                                <label className="form-label-compact">🎹 Orgel</label>
                                 <select
-                                    className="form-select"
+                                    className="form-select form-select-sm"
                                     value={selectedOrganSensor}
                                     onChange={(e) => setSelectedOrganSensor(e.target.value)}
                                 >
-                                    <option value="">-- Sensor auswählen --</option>
+                                    <option value="">-- Auswählen --</option>
                                     {devices.map(device => (
                                         <optgroup key={device.id} label={device.name || `Device ${device.id}`}>
-                                            {device.inputs && device.inputs.map(input => (
-                                                <option key={input.id} value={`${device.id}:${input.id}`}>
-                                                    {input.name || `Input ${input.id}`}
+                                            {device.inputs && device.inputs.length > 0 ? (
+                                                device.inputs.map(input => (
+                                                    <option key={input.id} value={`${device.id}:${input.id}`}>
+                                                        {input.attributes?.title || input.attributes?.alias || input.name || input.title || `Input ${input.id}`}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option value={device.id}>
+                                                    {device.name} (Gerät direkt)
                                                 </option>
-                                            ))}
+                                            )}
                                         </optgroup>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        <div className="mt-3">
+                        <div className="mt-2">
                             <button
-                                className="btn btn-primary"
+                                className="btn btn-primary btn-sm"
                                 onClick={handleLoadData}
                                 disabled={!selectedIndoorSensor && !selectedOutdoorSensor && !selectedWallSensor && !selectedOrganSensor}
                             >
@@ -282,9 +494,9 @@ function App() {
                     </TabList>
 
                     <TabPanel>
-                        <div className="mt-4">
-                            <h3>Dashboard - Alle Monitore</h3>
-                            <p className="text-muted">
+                        <div className="mt-2">
+                            <h4>Dashboard - Alle Monitore</h4>
+                            <p className="text-muted small mb-2">
                                 Diese Übersicht zeigt alle wichtigen Klimaparameter für Ihr Kirchengebäude auf einen Blick.
                             </p>
                             <div className="row">
@@ -307,9 +519,9 @@ function App() {
                     </TabPanel>
 
                     <TabPanel>
-                        <div className="mt-4">
-                            <h3>Schimmelrisiko-Analyse (Sedlbauer-Modell)</h3>
-                            <p className="text-muted">
+                        <div className="mt-2">
+                            <h4>Schimmelrisiko-Analyse (Sedlbauer-Modell)</h4>
+                            <p className="text-muted small mb-2">
                                 Überwachung des Schimmelrisikos basierend auf wissenschaftlichen Isoplethen-Diagrammen.
                             </p>
                             <SedlbauerMonitor data={sedlbauerData} />
@@ -317,9 +529,9 @@ function App() {
                     </TabPanel>
 
                     <TabPanel>
-                        <div className="mt-4">
-                            <h3>Intelligente Lüftungsentscheidung</h3>
-                            <p className="text-muted">
+                        <div className="mt-2">
+                            <h4>Intelligente Lüftungsentscheidung</h4>
+                            <p className="text-muted small mb-2">
                                 Vergleich der absoluten Feuchte zwischen innen und außen - für optimale Lüftungsentscheidungen.
                             </p>
                             <VentilationWidget
@@ -330,9 +542,9 @@ function App() {
                     </TabPanel>
 
                     <TabPanel>
-                        <div className="mt-4">
-                            <h3>Salz-Wächter - Mauerwerksschutz</h3>
-                            <p className="text-muted">
+                        <div className="mt-2">
+                            <h4>Salz-Wächter - Mauerwerksschutz</h4>
+                            <p className="text-muted small mb-2">
                                 Überwachung von Salzkristallisation im Mauerwerk zur Vermeidung von Bauschäden.
                             </p>
                             <SaltMonitor wallData={wallData} />
@@ -340,9 +552,9 @@ function App() {
                     </TabPanel>
 
                     <TabPanel>
-                        <div className="mt-4">
-                            <h3>Orgelschutz - Klimakorridor</h3>
-                            <p className="text-muted">
+                        <div className="mt-2">
+                            <h4>Orgelschutz - Klimakorridor</h4>
+                            <p className="text-muted small mb-2">
                                 Überwachung des optimalen Klimakorridors für Pfeifenorgeln - Schutz vor Verstimmung und Materialschäden.
                             </p>
                             <OrganProtection organData={organData} />
@@ -350,9 +562,9 @@ function App() {
                     </TabPanel>
                 </Tabs>
 
-                <footer className="mt-5 mb-4 text-center text-muted">
-                    <small>
-                        LineMetrics Kirchen-Klima-Monitor v1.0 | Entwickelt für den Schutz sakraler Gebäude und Kunstwerke
+                <footer className="mt-3 mb-2 text-center text-muted">
+                    <small style={{ fontSize: '0.75rem' }}>
+                        LineMetrics Kirchen-Klima-Monitor v1.0
                     </small>
                 </footer>
             </div>

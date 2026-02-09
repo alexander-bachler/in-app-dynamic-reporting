@@ -248,6 +248,10 @@ tramp
 # Docker
 .dockerignore
 
+# GitHub specific
+github-setup-commands.sh
+README-GITHUB.md
+
 # Temporary files
 tmp/
 temp/

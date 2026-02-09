@@ -163,6 +163,32 @@ class ApiClient {
         return data;
     }
 
+    // Children of a resource by object_type (e.g. device, attribute)
+    public async getChildren(objectId: string, objectType: string, limit = 1000, offset = 0, loadInputRef = false): Promise<any[]> {
+        await this.getAccessToken();
+        let url = `${this.baseUrl}/v2/children/${objectId}?object_type=${objectType}&limit=${limit}&offset=${offset}`;
+        if (loadInputRef && objectType === 'attribute') {
+            url += '&load_input_ref=1';
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${this.accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Fehler bei getChildren:', response.status, errorText);
+            return [];
+        }
+
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+    }
+
     // Umbenennung und Anpassung der Funktion
     public async getDataForInput(timeFrom: string, timeTo: string, inputId: string, granularity: string = 'PT60M', timeZone: string = 'Europe/Vienna'): Promise<any> {
         const cacheKey = `dataForInput_${inputId}_${timeFrom}_${timeTo}_${granularity}_${timeZone}`;

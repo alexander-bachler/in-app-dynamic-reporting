@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Chart } from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { checkOrganProtection } from '../utils/climate-math';
 
-Chart.register(annotationPlugin);
+// Register Chart.js components
+Chart.register(...registerables, annotationPlugin);
 
 /**
  * Organ Protection Widget - Climate Corridor Monitor
